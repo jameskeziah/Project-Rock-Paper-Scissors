@@ -146,4 +146,89 @@ function renderScore() {
 }
 
 //EVENT LISTNERS 
-//
+// powerBtn: start / restart game
+powerBtn.onclick = () => {
+    isPlaying = !isPlaying;
+    (isPlaying) ? gameInit() : gameEnd();
+}
+// muteBtn: mute / play
+muteBtn.onclick = () => {
+    muteBtnIcon.classList.toggle("fa-volume-mute")
+    muteBtnIcon.classList.toggle("fa-volume-up")
+    if (battleMusic.paused) {
+        battleMusic.play();
+    } else {
+        battleMusic.pause();
+    }
+}
+// loops music
+battleMusic.addEventListener("ended", () =>{
+    battleMusic.currentTime = 0;
+    battleMusic.play();
+})
+
+// displays text and set player, computer position when start screen animation ends
+view.addEventListener("animationed", (e) => {
+    if (e.animationName === "openanimation") {
+        view.classList.add("no-screen");
+        view.classList.remove("init");
+        computerImg.style.left =  "-3%"
+        startGame();
+        view.dispatchEvent(animateTextDoneEvent);
+    }
+})
+
+// animate text from queue
+view.addEventListener("animatetextdone", () => {
+    if (textQueue.length !== 0) {
+        isAnimating = true;
+        timer = setTimeout(() => {animateText(textQueue.shift())}, 1000);
+    }
+})
+
+// stops choices animation
+playerChoiceEl.addEventListener("animationed", (e) => {
+    if (e.animationName === "player-shoot") {
+        playerChoiceEl.classList.remove("shoot");
+    }
+})
+
+computerChoiceE1.addEventListener("animationend", (e) => {
+    if (e.animationName === "computer-shoot"){
+        computerChoiceE1.classList.remove("shoot");
+    }
+})
+
+// stops player & computer animation on "hurt" or "tie"
+playerImg.addEventListener("animationend", (e) => {
+    if (e.animationName === "hurt") {
+        playerImg.classList.remove("hurt");
+    }
+    if (e.animationName === "tie") {
+        playerImg.classList.remove("tie");
+    }
+})
+computerImg.addEventListener("animationend", (e) => {
+    if (e.animationName === "hurt") {
+        computerImg.classList.remove("hurt");
+    }
+    if (e.animationName === "tie") {
+        computerImg.classList.remove("tie");
+    }
+})
+
+// the choices buttons 
+document.querySelector("#statusBtn").onclick = () => {
+    if (!isGameEnding) {
+        ShowMsg(`Your score: ${playerScore}, Computer  score: ${computerScore}`);
+    }
+}
+document.querySelector("#rockBtn").onclick = () => {
+    playRound("rock");
+}
+document.querySelector  ("#paperBtn").onclick = () => {
+    playRound("paper")
+}
+document.querySelector("#scissorsBtn").onclick = () => {
+    playRound("scissors");
+}
